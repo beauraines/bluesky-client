@@ -37,7 +37,7 @@ class BlueSkyClient {
      getFollows = async (actor,cursor = null, follows = []) => {
         try {
         // Make the API call with the optional cursor
-        const response = await agent.getFollows({
+        const response = await this.agent.getFollows({
             actor, // Replace with your handle
             limit: 100,
             cursor,
@@ -49,7 +49,7 @@ class BlueSkyClient {
         // If there's a cursor for the next page, make a recursive call
         if (response.data.cursor) {
             // console.log('getting more');
-            return getFollows(actor,response.data.cursor, follows);
+            return this.getFollows(actor,response.data.cursor, follows);
         }
     
         // Return the complete list of follows once pagination ends
@@ -64,7 +64,7 @@ class BlueSkyClient {
      getFollowers = async (actor,cursor = null, followers = []) =>  {
       try {
         // Make the API call with the optional cursor
-        const response = await agent.getFollowers({
+        const response = await this.agent.getFollowers({
           actor, // Replace with your handle
           limit: 100,
           cursor,
@@ -76,7 +76,7 @@ class BlueSkyClient {
         // If there's a cursor for the next page, make a recursive call
         if (response.data.cursor) {
             // console.log('getting more');
-          return getFollowers(actor,response.data.cursor, followers);
+          return this.getFollowers(actor,response.data.cursor, followers);
         }
     
         // Return the complete list of follows once pagination ends
@@ -90,11 +90,12 @@ class BlueSkyClient {
     getLists = async (actor) => {
         let lists
         try {
-          const response = await agent.app.bsky.graph.getLists({actor})
+          const response = await this.agent.app.bsky.graph.getLists({actor})
           if (! response.success) {
               throw new Error("get lists unsuccessful");
           }
           lists = response.data.lists;
+          return lists;
         } catch (error) {
           console.error(error.message);
         }
@@ -105,7 +106,7 @@ class BlueSkyClient {
         let cursor;
         let members = [];
         do {
-        let res = await agent.app.bsky.graph.getList({
+        let res = await this.agent.app.bsky.graph.getList({
             list: listUri,
             limit: 30,
             cursor
@@ -120,7 +121,7 @@ class BlueSkyClient {
     unfollow = async (followUri) => {
         const unfollowUri = followUri;
         const [rkey, , repo] = unfollowUri ? unfollowUri.split('/').reverse() : [];
-        await agent.com.atproto.repo.deleteRecord({
+        await this.agent.com.atproto.repo.deleteRecord({
             collection: 'app.bsky.graph.follow',
             repo,
             rkey,
@@ -128,7 +129,7 @@ class BlueSkyClient {
     }
 
     getMostRecentLike = async (actor) => {
-        const response = await agent.getActorLikes({actor,limit:1});
+        const response = await this.agent.getActorLikes({actor,limit:1});
         if (response.success) {
           return response.data;
         } else {
@@ -137,7 +138,7 @@ class BlueSkyClient {
     }
 
     getMostRecentPost = async (actor) => {
-        const response = await agent.getAuthorFeed({actor,limit:1});
+        const response = await this.agent.getAuthorFeed({actor,limit:1});
         if (response.success) {
           return response.data;
         } else {
