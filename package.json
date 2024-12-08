@@ -1,7 +1,7 @@
 {
   "name": "bluesky-client",
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "src/bluesky.js",
   "scripts": {
     "test": "jest --passWithNoTests",
     "lint": "eslint src",
