@@ -130,8 +130,8 @@ class BlueSkyClient {
 
     follow = async (actorDid) => {
       const response = await this.agent.follow(actorDid);
-      if (response.success) {
-        return response.data;
+      if (response.validationStatus == 'valid') {
+        return response;
       } else {
         throw new Error(`Error following ${actorDid}`);
       }
