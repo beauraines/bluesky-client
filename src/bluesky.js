@@ -140,7 +140,7 @@ class BlueSkyClient {
     getMostRecentLike = async (actor) => {
         const response = await this.agent.getActorLikes({actor,limit:1});
         if (response.success) {
-          return response.data;
+          return response.data.feed[0].post;
         } else {
           throw new Error("Error getting actor feed");
         }
@@ -149,7 +149,7 @@ class BlueSkyClient {
     getMostRecentPost = async (actor) => {
         const response = await this.agent.getAuthorFeed({actor,limit:1});
         if (response.success) {
-          return response.data;
+          return response.data.feed[0].post;
         } else {
           throw new Error("Error getting actor feed");
         }
