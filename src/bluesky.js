@@ -128,6 +128,15 @@ class BlueSkyClient {
         });
     }
 
+    follow = async (actorDid) => {
+      const response = await this.agent.follow(actorDid);
+      if (response.success) {
+        return response.data;
+      } else {
+        throw new Error(`Error following ${actorDid}`);
+      }
+    }
+
     getMostRecentLike = async (actor) => {
         const response = await this.agent.getActorLikes({actor,limit:1});
         if (response.success) {
