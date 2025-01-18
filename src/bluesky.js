@@ -149,10 +149,40 @@ class BlueSkyClient {
     getMostRecentPost = async (actor) => {
         const response = await this.agent.getAuthorFeed({actor,limit:1});
         if (response.success) {
-          return response.data.feed[0].post;
+          return response.data.feed[0];
         } else {
           throw new Error("Error getting actor feed");
         }
+    }
+
+    isActive = async (actor) => {
+      const mostRecentPost = await this.getMostRecentPost(actor);
+      let active = false;
+      let recentActivity
+      if (!mostRecentPost) { 
+        // Never posted
+        return {active};
+      } else {
+        if (mostRecentPost.reply) {
+          active = true;
+          recentActivity = 'reply';
+        } else if (mostRecentPost.post?.author.handle == actor) {
+          active = true;
+          recentActivity = 'post';
+        } else {
+          active = true;
+          recentActivity = 'repost';
+        }
+        console.log(mostRecentPost)
+        const activityDate = dayjs(mostRecentPost.post.record.createdAt);
+        const postAge = dayjs().diff(activityDate,'weeks')
+        // TODO this should be a function argument
+        if (postAge > 2) {
+          console.log(`${actor} is inactive.`)
+          active = false;
+        }
+        return {active,recentActivity,activityDate:activityDate.toISOString()};
+      }
     }
 
 }
